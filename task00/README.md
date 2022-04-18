@@ -8,19 +8,19 @@
 
 ![preview](task0_preview.png)
 
-Follow the instruction below to build the attached C++ code. This code will display an OpenGL window showing a triangle.  Take a screenshot of the window (it should look like the image above) and paste it below.  By putting the imae under the directory `cga-<username>/task00` and edit this markdown document. 
+Follow the instruction below to build the attached C++ code. This code will display an OpenGL window showing a triangle.  Take a screenshot of the window (it should look like the image above) and paste it below.  By putting the imae under the directory `cga-<username>/task00` and edit this markdown document.
 
-=== (paste the screenshot image here`![](image file name)` ) === 
+![preview](task0_preview_2.png)
 
 
 ----
 
 
-## Instruction 
+## Instruction
 
-### Set Up Programming Environment 
+### Set Up Programming Environment
 
-You need to have **git**, **cmake**, and **C++ compiler** in your computer to complete this assignement. Read the following document to install these. 
+You need to have **git**, **cmake**, and **C++ compiler** in your computer to complete this assignement. Read the following document to install these.
 
 [How to Set Up C++ Programming Environment](../doc/setup_env.md)
 
@@ -65,7 +65,7 @@ $ git reset --hard origin/main  # reset the local main branch same as remote rep
 To do this assignement, you need to be in the branch `task00`.  You can always check your the current branch by
 
 ```bash
-$ git branch -a   # list all branches, showing the current branch 
+$ git branch -a   # list all branches, showing the current branch
 ```
 
 You are probably in the `main` branch. Let's create the `task00` branch and set it as the current branch.
@@ -84,7 +84,7 @@ After the environment is ready, let's build and compile the code. We do **out-of
 $ cd task00
 $ mkdir build
 $ cd build
-$ cmake .. 
+$ cmake ..
 $ cmake --build .
 ```
 Update this markdown document by editing `acg-<username>/task00/README.md` .Please learn the syntax of the markdown document by yourself.
@@ -92,7 +92,7 @@ Update this markdown document by editing `acg-<username>/task00/README.md` .Plea
 
 ### Submit
 
-Finally, you submit the document by pushing to the `task00` branch of the remote repository. 
+Finally, you submit the document by pushing to the `task00` branch of the remote repository.
 
 ```bash
 cd acg-<username>    # go to the top of the repository
@@ -103,7 +103,7 @@ git commit -m "task00 finished"   # the comment can be anything
 git push --set-upstream origin task00  # up date the task0 branch of the remote repository
 ```
 
-got to the GitHub webpage `https://github.com/ACG-2022S/acg-<username>` . If everything looks good on this page, make a pull request. 
+got to the GitHub webpage `https://github.com/ACG-2022S/acg-<username>` . If everything looks good on this page, make a pull request.
 
 ![](../doc/pullrequest.png)
 
@@ -116,5 +116,3 @@ got to the GitHub webpage `https://github.com/ACG-2022S/acg-<username>` . If eve
 
 - I mistakenly submit the assignement in the `main` branch
   - Make a branch `task00` and submit again
-
-
