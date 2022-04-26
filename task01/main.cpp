@@ -17,6 +17,7 @@ Eigen::Matrix<double,4,4,Eigen::RowMajor> GetHomographicTransformation(
       {+0.5,-0.5},
       {+0.5,+0.5},
       {-0.5,+0.5} };
+
   Eigen::Matrix<double,4,4,Eigen::RowMajor> m;
   // set identity as default
     m <<
@@ -24,12 +25,38 @@ Eigen::Matrix<double,4,4,Eigen::RowMajor> GetHomographicTransformation(
       0, 1, 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1;
-  // write some code to compute the 4x4 Homographic transformation matrix `m`;
-  // `m` should transfer :
-  // (c0[0][0],c0[][1],z) -> (c1[0][0],c1[0][1],z)
-  // (c0[1][0],c0[][1],z) -> (c1[1][0],c1[1][1],z)
-  // (c0[2][0],c0[][1],z) -> (c1[2][0],c1[2][1],z)
-  // (c0[3][0],c0[][1],z) -> (c1[3][0],c1[3][1],z)
+
+    Eigen::Matrix<double,8,9,Eigen::RowMajor> A;
+
+    A <<
+      c0[0][0], c0[0][1], 1, 0, 0, 0,  -c1[0][0]*c0[0][0], -c1[0][0]*c0[0][1], -c1[0][0],
+      0, 0, 0, c0[0][0], c0[0][1], 1,  -c1[0][1]*c0[0][0], -c1[0][1]*c0[0][1], -c1[0][1],
+      c0[1][0], c0[1][1], 1, 0, 0, 0,  -c1[1][0]*c0[1][0], -c1[1][0]*c0[1][1], -c1[1][0],
+      0, 0, 0, c0[1][0], c0[1][1], 1,  -c1[1][1]*c0[1][0], -c1[1][1]*c0[1][1], -c1[1][1],
+      c0[2][0], c0[2][1], 1, 0, 0, 0,  -c1[2][0]*c0[2][0], -c1[2][0]*c0[2][1], -c1[2][0],
+      0, 0, 0, c0[2][0], c0[2][1], 1,  -c1[2][1]*c0[2][0], -c1[2][1]*c0[2][1], -c1[2][1],
+      c0[3][0], c0[3][1], 1, 0, 0, 0,  -c1[3][0]*c0[3][0], -c1[3][0]*c0[3][1], -c1[3][0],
+     0, 0, 0, c0[3][0], c0[3][1], 1,  -c1[3][1]*c0[3][0], -c1[3][1]*c0[3][1], -c1[3][1];
+
+    Eigen::Matrix<double,9,9,Eigen::RowMajor> B;
+    B = A.transpose() * A;
+
+    Eigen::EigenSolver<Eigen::Matrix<double,9,9>> s(B);
+
+    //Find index of minimum, non-zero, eigenvalue
+    float min_value = 999.9;
+    int min_index = 1;
+    for(int i = 0; i < 9; i++){
+        if(s.pseudoEigenvalueMatrix()(i,i) > 0.00001 && s.pseudoEigenvalueMatrix()(i,i) < min_value){
+            min_value = s.pseudoEigenvalueMatrix()(i,i);
+            min_index = i;
+        }
+    }
+
+    //Organize eigenvector corresponding to the minimum eigen value in the matrix, scale so that m(3,3) is 1
+    for(int i = 0; i < 8; i++){
+        m(i%3,int(i/3)) = s.pseudoEigenvectors()(i,min_index) / s.pseudoEigenvectors()(8,min_index);
+    }
 
   return m;
 }
