@@ -22,6 +22,7 @@
 #include "delfem2/msh_io_ply.h"
 #include "delfem2/msh_normal.h"
 #include "delfem2/mat4.h"
+#include "delfem2/mat3_funcs.h"
 #include "delfem2/sampling.h"
 #include "delfem2/opengl/tex.h"
 #include "delfem2/glfw/viewer3.h"
@@ -42,36 +43,33 @@ double SamplingHemisphere(
     std::array<unsigned short, 3> &Xi,
     const double nrm[3])  //
 {
-  // below implement code to sample hemisphere with cosine weighted probabilistic distribution
-  // hint1: use polar coordinate (longitude and latitude).
-  // hint2: generate two float values using "dfm2::MyERand48<double>(Xi)". One will be longitude and another will be latitude
-  // hint3: for longitude use inverse sampling method to achieve cosine weighted sample.
-  // hint4: first assume z is the up in the polar coordinate, then rotate the sampled direction such that "z" will be up.
-  // write some codes below (5-10 lines)
 
-
-  // below: naive implementation to "uniformly" sample hemisphere using "rejection sampling"
-  // to not be used for the "problem2" in the assignment
-  for(int i=0;i<10;++i) { // 10 is a magic number
     const auto d0 = dfm2::MyERand48<double>(Xi);  // you can sample uniform distribution [0,1] with this function
     const auto d1 = dfm2::MyERand48<double>(Xi);
-    const auto d2 = dfm2::MyERand48<double>(Xi);
-    dir[0] = d0 * 2 - 1; // dir[0] -> [-1,+1]
-    dir[1] = d1 * 2 - 1;
-    dir[2] = d2 * 2 - 1;
-    double len = std::sqrt(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
-    if( len > 1 ){ continue; } // reject if outside the unit sphere
-    if( len < 1.0e-5 ){ continue; }
-    // project on the surface of the unit sphere
-    dir[0] /= len;
-    dir[1] /= len;
-    dir[2] /= len;
-    double cos = nrm[0]*dir[0] + nrm[1]*dir[1] + nrm[2]*dir[2]; // cosine weight
-    if( cos < 0 ){ continue; }
-    return cos*2;  // (coefficient=1/M_PI) * (area_of_hemisphere=M_PI*2) = 2
+
+    float z = sqrt(d0);
+    float phi = 2*M_PI*d1;
+    float theta = acos(z);
+
+    dir[0] = sin(theta)*cos(phi);
+    dir[1] = sin(theta)*sin(phi);
+    dir[2] = z;
+
+    //rotation matrix for unit z to normal
+    auto rot_mat = dfm2::Mat3_MinimumRotation(dfm2::CVec3d({0.0,0.0,1.0}), dfm2::CVec3d({nrm[0],nrm[1],nrm[2]}) );
+
+    //dir = rot_mat*dir;
+    float dir0 = dir[0]*rot_mat[0] + dir[1]*rot_mat[1] + dir[2]*rot_mat[2];
+    float dir1 = dir[0]*rot_mat[3] + dir[1]*rot_mat[4] + dir[2]*rot_mat[5];
+    float dir2 = dir[0]*rot_mat[6] + dir[1]*rot_mat[7] + dir[2]*rot_mat[8];
+    dir[0] = dir0;
+    dir[1] = dir1;
+    dir[2] = dir2;
+
+    return 1;
+
   }
-  return 0;
-}
+
 
 double SampleAmbientOcclusion(
     std::array<unsigned short, 3> &Xi,
@@ -220,5 +218,3 @@ int main() {
   glfwTerminate();
   exit(EXIT_SUCCESS);
 }
-
-
