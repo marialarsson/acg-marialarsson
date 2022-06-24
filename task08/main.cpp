@@ -92,14 +92,14 @@ int main() {
   // write a code to make a matrix "sparse" that is the coefficient matrix of the linear system of the laplacian mesh deformation
   // the "sparse" will be made from "matrix_laplacian", "matrix_penalty", "penalty_coeff"
   // to do the assignment comment out below:
-  /*
+
   {
-    const Eigen::SparseMatrix<double> sparse = // write something here
+    const Eigen::SparseMatrix<double> sparse = matrix_laplacian + matrix_penalty*penalty_coeff; // write something here
     // below is the code to LU decompose sparse. Don't change
     solver.analyzePattern(sparse); // symbolic factorization
     solver.factorize(sparse); // numerical factorization
   }
-  */
+
 
   // opengl starts here
   delfem2::glfw::CViewer3 viewer(2);
@@ -119,9 +119,10 @@ int main() {
     // write some codes (about 2 lines) below to compute "vtx_xyz_def" that is smoothly deformed "vtx_xyz_ref"
     // The "vtx_xyz_def" satisfies fixed constraints using penalty method.
     // "vtx_xyz_ref", "vtx_xyz_def", "matrix_laplacian", "penalty_coeff", "matrix_penalt", and "solver" are used here.
-
+    vtx_xyz_def = vtx_xyz_ref;
     // Eigen::MatrixXd rhs0 = // write some code to compute rhs vector
-    // vtx_xyz_def = solver.solve(rhs0);
+    rhs0=rhs0;
+    vtx_xyz_def = solver.solve(rhs0);
 
     // --------------------
     // below: visualization (don't change)
@@ -150,5 +151,3 @@ int main() {
   glfwTerminate();
   exit(EXIT_SUCCESS);
 }
-
-
