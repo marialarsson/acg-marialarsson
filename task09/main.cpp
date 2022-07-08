@@ -25,7 +25,7 @@ Eigen::MatrixXd CppPoissonBlending(
   assert(src.cols() == src_mask.cols() );
   assert(src.cols() == src_mask.cols() );
   Eigen::MatrixXd ret = dist.cast<double>();
-  for(unsigned int itr=0;itr<num_iteration;++itr) {  // Gauss-Seidel iteration
+  for(unsigned int itr=0;itr<num_iteration;++itr) {  // Gauss-Seidel iteration // solve & update solution row by row
     for (unsigned int src_i = 1; src_i < src.rows() - 1; ++src_i) {
       for (unsigned int src_j = 1; src_j < src.cols() - 1; ++src_j) {
         if (src_mask(src_i, src_j) == 0) { continue; }
@@ -42,8 +42,11 @@ Eigen::MatrixXd CppPoissonBlending(
         const double ret_s = ret(ret_i, ret_j-1);
         const double ret_e = ret(ret_i+1, ret_j);
         const double ret_w = ret(ret_i-1, ret_j);
+
         // write some code here to implement Poisson image editing
-        double ret_c = src_c; // change this line
+        double b = -4*(src(src_i,src_j)) + src_n + src_s + src_e + src_w;
+        double f = -4*(src(ret_i,ret_j)) + ret_n + ret_s + ret_e + ret_w;
+        double ret_c = 1/4(b-f); // change this line
         // no edit below
         ret_c = (ret_c>255.) ? 255. : ret_c; // clamp
         ret_c = (ret_c<0.) ? 0. : ret_c; // clamp
@@ -62,5 +65,3 @@ PYBIND11_MODULE(cppmodule, m) {
         py::arg("dist"), py::arg("src"), py::arg("src_mask"),
         py::arg("offset"), py::arg("num_iteration"));
 }
-
-
